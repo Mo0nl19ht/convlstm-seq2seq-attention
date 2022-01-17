@@ -45,9 +45,9 @@ class Self_Attention_Memory_Module(tf.keras.Model):
         combined = self.layer_m(tf.concat([Z, h], 1))  # 3 * input_dim
         mo, mg, mi = tf.split(combined, self.input_dim, axis=1)
 
-        mi = tf.math.sigmoid(mi)
-        new_m = (1 - mi) * m + mi * tf.math.tanh(mg)
-        new_h = tf.math.sigmoid(mo) * new_m
+        mi = tf.keras.activations.sigmoid(mi)
+        new_m = (1 - mi) * m + mi * tf.keras.activations.tanh(mg)
+        new_h = tf.keras.activations.sigmoid(mo) * new_m
 
         return new_h, new_m
 
