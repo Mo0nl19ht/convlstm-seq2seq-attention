@@ -1,13 +1,16 @@
 import tensorflow as tf
 from tensorflow import keras
 
+from Self_Attention_Memory_Module import Self_Attention_Memory_Module
+
+
 class ConvLSTMCell(tf.keras.Model):
     def __init__(self, hidden_dim,att_hidden_dim, kernel_size, bias):
         super(ConvLSTMCell, self).__init__()
         self.hidden_dim = hidden_dim
         self.kernel_size = kernel_size
         self.bias = bias
-        self.attention_layer = self_attention_memory_module(hidden_dim,att_hidden_dim)
+        self.attention_layer = Self_Attention_Memory_Module(hidden_dim,att_hidden_dim)
 
         self.conv = tf.keras.layers.Conv2D(
             filters = 4 * self.hidden_dim,
