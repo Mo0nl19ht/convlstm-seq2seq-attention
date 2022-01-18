@@ -10,6 +10,7 @@ class Decoder(tf.keras.Model):
         self.decoder_input_convlstm = ConvLSTMCell(
             hidden_dim=hidden,
             kernel_size=(3, 3),
+            att_hidden_dim=hidden,
             bias=True
         )
         if self.dec_num_layers is not None:
@@ -17,6 +18,7 @@ class Decoder(tf.keras.Model):
                 ConvLSTMCell(
                     hidden_dim=hidden,
                     kernel_size=(3, 3),
+                    att_hidden_dim=hidden,
                     bias=True
                 ) for _ in range(dec_num_layers)
             ]
@@ -32,24 +34,25 @@ class Decoder(tf.keras.Model):
         if self.dec_num_layers is not None:
             hidden_h_t = []
             hidden_c_t = []
+            hidden_m_t = []
             for i in range(self.dec_num_layers):
                 hidden_h_t += [self.init_hidden(enc_output[0], i)[0]]
                 hidden_c_t += [self.init_hidden(enc_output[0], i)[1]]
-
+                hidden_m_t += [self.init_hidden(h_t, i)[2]]
         outputs = []
         input_tensor = enc_output[0]
-        h_t, c_t = self.init_hidden(input_tensor, 'seq')
+        h_t, c_t, m_t = self.init_hidden(input_tensor, 'seq')
         for t in range(self.future_len):
-            h_t, c_t = self.decoder_input_convlstm(
+            h_t, c_t, m_t = self.decoder_input_convlstm(
                 input_tensor=input_tensor,
-                cur_state=[h_t, c_t]
+                cur_state=[h_t, c_t, m_t]
             )
             input_tensor = h_t
             if self.dec_num_layers is not None:
                 for i in range(self.dec_num_layers):
-                    hidden_h_t[i], hidden_c_t[i] = self.hidden_decoder_layers[i](
+                    hidden_h_t[i], hidden_c_t[i], hidden_m_t[i] = self.hidden_decoder_layers[i](
                         input_tensor=input_tensor,
-                        cur_state=[hidden_h_t[i], hidden_c_t[i]]
+                        cur_state=[hidden_h_t[i], hidden_c_t[i], hidden_m_t[i]]
                     )
                     input_tensor = hidden_h_t[i]
                 output = self.decoder_output_layer(hidden_h_t[-1])
@@ -63,14 +66,14 @@ class Decoder(tf.keras.Model):
     def init_hidden(self, input_tensor, seq):
         if seq == 'seq':
             b, h, w, _ = input_tensor.shape
-            h_t, c_t = self.decoder_input_convlstm.init_hidden(
+            h_t, c_t, m_t = self.decoder_input_convlstm.init_hidden(
                 batch_size=b,
                 image_size=(h, w)
             )
         else:
             b, h, w, _ = input_tensor.shape
-            h_t, c_t = self.hidden_decoder_layers[seq].init_hidden(
+            h_t, c_t, m_t = self.hidden_decoder_layers[seq].init_hidden(
                 batch_size=b,
                 image_size=(h, w)
             )
-        return h_t, c_t
+        return h_t, c_t, m_t
