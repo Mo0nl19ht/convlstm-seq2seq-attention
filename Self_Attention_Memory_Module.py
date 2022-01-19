@@ -1,10 +1,9 @@
 import tensorflow as tf
 class Self_Attention_Memory_Module(tf.keras.Model):
     #파라미터에서 input_dim지우기
-    def __init__(self, input_dim,hidden_dim, kernel_size):
+    def __init__(self, hidden_dim, kernel_size):
         super(Self_Attention_Memory_Module, self).__init__()
         self.hidden_dim = hidden_dim
-        self.input_dim = input_dim
         self.layer_q = tf.keras.layers.Conv2D(hidden_dim, kernel_size,padding="same")
         self.layer_k = tf.keras.layers.Conv2D(hidden_dim, kernel_size,padding="same")
         self.layer_k2 = tf.keras.layers.Conv2D(hidden_dim, kernel_size,padding="same")

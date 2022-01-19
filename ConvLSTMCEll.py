@@ -10,7 +10,7 @@ class ConvLSTMCell(tf.keras.Model):
         self.hidden_dim = hidden_dim
         self.kernel_size = kernel_size
         self.bias = bias
-        self.attention_layer = Self_Attention_Memory_Module(hidden_dim,att_hidden_dim,kernel_size)
+        self.attention_layer = Self_Attention_Memory_Module(att_hidden_dim,kernel_size)
 
         self.conv = tf.keras.layers.Conv2D(
             filters = 4 * self.hidden_dim,
