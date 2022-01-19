@@ -24,7 +24,7 @@ class Decoder(tf.keras.Model):
             ]
             self.norm_layers = [
                 tf.keras.layers.LayerNormalization(axis=-1)
-                for _ in range(self.enc_num_layers)
+                for _ in range(self.dec_num_layers)
             ]
 
         self.decoder_output_layer = tf.keras.layers.Conv2D(
