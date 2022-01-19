@@ -20,6 +20,11 @@ class Encoder(tf.keras.Model):
                     bias=True,
                 ) for _ in range(self.enc_num_layers)
             ]
+            self.norm_layers = [
+                tf.keras.layers.LayerNormalization(axis=-1)
+                for _ in range(self.enc_num_layers)
+            ]
+
 
     def call(self, enc_input):
         h_t, c_t, m_t = self.init_hidden(enc_input, 'seq')
@@ -44,7 +49,9 @@ class Encoder(tf.keras.Model):
                         input_tensor=input_tensor,
                         cur_state=[hidden_h_t[i], hidden_c_t[i], hidden_m_t[i]]
                     )
+                    hidden_h_t[i] = self.norm_layers[i](hidden_h_t[i])
                     input_tensor = hidden_h_t[i]
+                    print(input_tensor.shape, "layer norm shape")
 
         if self.enc_num_layers is not None:
             return hidden_h_t[-1], hidden_c_t[-1], hidden_m_t[-1]

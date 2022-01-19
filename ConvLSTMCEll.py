@@ -29,7 +29,7 @@ class ConvLSTMCell(tf.keras.Model):
         # print(combined.shape)
         combined_conv = self.conv(combined)
         normalized_conv = self.group_norm(combined_conv)
-        print(normalized_conv.shape)
+        # print(normalized_conv.shape)
         # num_or_size_splits 이거 self.hidden_dim으로 바꿀수도   원래는 axis=-1 , num_or = 4였음
         cc_i, cc_f, cc_o, cc_g = tf.split(normalized_conv, num_or_size_splits=4, axis=-1)
         i = tf.keras.activations.sigmoid(cc_i)

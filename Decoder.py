@@ -22,6 +22,10 @@ class Decoder(tf.keras.Model):
                     bias=True
                 ) for _ in range(dec_num_layers)
             ]
+            self.norm_layers = [
+                tf.keras.layers.LayerNormalization(axis=-1)
+                for _ in range(self.enc_num_layers)
+            ]
 
         self.decoder_output_layer = tf.keras.layers.Conv2D(
             filters=1,
@@ -54,13 +58,13 @@ class Decoder(tf.keras.Model):
                         input_tensor=input_tensor,
                         cur_state=[hidden_h_t[i], hidden_c_t[i], hidden_m_t[i]]
                     )
+                    hidden_h_t[i] = self.norm_layers[i](hidden_h_t[i])
                     input_tensor = hidden_h_t[i]
                 output = self.decoder_output_layer(hidden_h_t[-1])
             else:
                 output = self.decoder_output_layer(h_t)
             outputs += [output]
         outputs = tf.stack(outputs, 1)
-
         return outputs
 
     def init_hidden(self, input_tensor, seq):
