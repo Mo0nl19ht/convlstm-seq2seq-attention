@@ -1,6 +1,6 @@
 import tensorflow as tf
 from tensorflow import keras
-
+import tensorflow_addons as tfa
 from Self_Attention_Memory_Module import Self_Attention_Memory_Module
 
 
@@ -11,13 +11,14 @@ class ConvLSTMCell(tf.keras.Model):
         self.kernel_size = kernel_size
         self.bias = bias
         self.attention_layer = Self_Attention_Memory_Module(att_hidden_dim,kernel_size)
-
         self.conv = tf.keras.layers.Conv2D(
             filters = 4 * self.hidden_dim,
             kernel_size = self.kernel_size,
             padding = 'same',
             use_bias = self.bias,
         )
+        self.group_norm =tfa.layers.GroupNormalization(groups=4 * self.hidden_dim, axis=-1)
+
 
     def call(self, input_tensor, cur_state):
         h_cur, c_cur, m_cur = cur_state
@@ -27,9 +28,10 @@ class ConvLSTMCell(tf.keras.Model):
         combined = tf.concat([input_tensor, h_cur], axis=-1)
         # print(combined.shape)
         combined_conv = self.conv(combined)
-        # print(combined_conv.shape)
+        normalized_conv = self.group_norm(combined_conv)
+        print(normalized_conv.shape)
         # num_or_size_splits 이거 self.hidden_dim으로 바꿀수도   원래는 axis=-1 , num_or = 4였음
-        cc_i, cc_f, cc_o, cc_g = tf.split(combined_conv, num_or_size_splits=4, axis=-1)
+        cc_i, cc_f, cc_o, cc_g = tf.split(normalized_conv, num_or_size_splits=4, axis=-1)
         i = tf.keras.activations.sigmoid(cc_i)
         f = tf.keras.activations.sigmoid(cc_f)
         o = tf.keras.activations.sigmoid(cc_o)
