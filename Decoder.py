@@ -38,7 +38,7 @@ class Decoder(tf.keras.Model):
             for i in range(self.dec_num_layers):
                 hidden_h_t += [self.init_hidden(enc_output[0], i)[0]]
                 hidden_c_t += [self.init_hidden(enc_output[0], i)[1]]
-                hidden_m_t += [self.init_hidden(h_t, i)[2]]
+                hidden_m_t += [self.init_hidden(enc_output[0], i)[2]]
         outputs = []
         input_tensor = enc_output[0]
         h_t, c_t, m_t = self.init_hidden(input_tensor, 'seq')

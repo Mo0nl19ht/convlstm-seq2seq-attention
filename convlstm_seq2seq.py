@@ -36,9 +36,9 @@ checkpoint_path = './seq2seq/kang/'
 num=16
 batch_size=64
 img_shape=(24,14,1)
-epochs = 2800
+epochs = 1000
 num_layer=4
-lr = 0.0006
+lr = 0.005
 loss_f="mse"
 drop=0.1
 
