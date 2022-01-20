@@ -36,9 +36,9 @@ checkpoint_path = './seq2seq/kang/'
 num=16
 batch_size=64
 img_shape=(24,14,1)
-epochs = 1000
+epochs = 3000
 num_layer=3
-lr = 0.005
+lr = 0.00005
 loss_f="mse"
 drop=0.1
 
@@ -61,4 +61,4 @@ optimizer = tf.keras.optimizers.Adam(lr)
 ckpt,ckpt_manager = make_checkpoint(checkpoint_path,model,optimizer)
 
 train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager)
-model.save_weights(f'seq2seq_inside_{filter_size}_{lr}_{loss_f}_{num_layer}_{epochs}_{drop}.h5')
+model.save_weights(f'seq2seq_인코더만layernorm_inside_{filter_size}_{lr}_{loss_f}_{num_layer}_{epochs}_{drop}.h5')

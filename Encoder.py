@@ -51,7 +51,7 @@ class Encoder(tf.keras.Model):
                     )
                     hidden_h_t[i] = self.norm_layers[i](hidden_h_t[i])
                     input_tensor = hidden_h_t[i]
-                    print(input_tensor.shape, "layer norm shape")
+                    # print(input_tensor.shape, "layer norm shape")
 
         if self.enc_num_layers is not None:
             return hidden_h_t[-1], hidden_c_t[-1], hidden_m_t[-1]
