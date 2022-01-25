@@ -37,7 +37,7 @@ num=16
 batch_size=64
 img_shape=(24,14,1)
 epochs = 12000
-num_layer=3
+num_layer=4
 lr = 0.00001
 loss_f="mse"
 drop=0.1
@@ -60,5 +60,7 @@ optimizer = tf.keras.optimizers.Adam(lr)
 
 ckpt,ckpt_manager = make_checkpoint(checkpoint_path,model,optimizer)
 
-train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager)
-model.save_weights(f'seq2seq_인코더만layernorm_inside_{filter_size}_{lr}_{loss_f}_{num_layer}_{epochs}_{drop}.h5')
+file_name=f'seq2seq_디코더까지layernorm_inside_{filter_size}_{lr}_{loss_f}_{num_layer}_{epochs}_{drop}'
+print(file_name)
+train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager,file_name)
+model.save_weights(f'{file_name}.h5')

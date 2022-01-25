@@ -1,6 +1,7 @@
 import time
 import tensorflow as tf
-def train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager):
+import pandas as pd
+def train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager,file_name):
     @tf.function
     def loss_function(output, target):
         mse = tf.math.reduce_mean(tf.keras.losses.MSE(output, target))
@@ -22,7 +23,7 @@ def train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager):
             optimizer.apply_gradients(zip(gradients, variables))
 
         return batch_loss
-
+    df=[]
     for epoch in range(epochs+1):
         tt=time.time()
         total_loss, total_val_score = 0, 0
@@ -37,8 +38,12 @@ def train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager):
             total_val_score += batch_loss
 
         total_val_score /=len(valid_loader)
-
-        print(f"epochs : {epoch}  total_loss : {total_loss} , total_val_score : {total_val_score} time : {time.time()-tt}" )
-        if epoch%100==0:
+        df.append([epoch,total_loss.items(),total_val_score.items()])
+        if epoch%10==0:
+            print(f"epochs : {epoch}  total_loss : {total_loss} , total_val_score : {total_val_score} time : {time.time()-tt}" )
+        if epoch%200==0:
+            print(f"epochs : {epoch}  total_loss : {total_loss} , total_val_score : {total_val_score} time : {time.time()-tt}" )
             print("Save ckpt")
             ckpt_manager.save()
+    df=pd.DataFrame(df,columns=['epoch','train_loss','val_loss'])
+    df.to_csv(f"{file_name}.csv",index=False)
