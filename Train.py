@@ -38,7 +38,7 @@ def train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager,file_nam
             total_val_score += batch_loss
 
         total_val_score /=len(valid_loader)
-        df.append([epoch,total_loss.items(),total_val_score.items()])
+        df.append([epoch,total_loss.numpy(),total_val_score.numpy()])
         if epoch%10==0:
             print(f"epochs : {epoch}  total_loss : {total_loss} , total_val_score : {total_val_score} time : {time.time()-tt}" )
         if epoch%200==0:

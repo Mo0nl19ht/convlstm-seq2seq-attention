@@ -38,7 +38,7 @@ batch_size=64
 img_shape=(24,14,1)
 epochs = 12000
 num_layer=4
-lr = 0.00001
+lr = 0.00002
 loss_f="mse"
 drop=0.1
 
