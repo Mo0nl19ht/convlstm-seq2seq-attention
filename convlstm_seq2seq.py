@@ -56,6 +56,7 @@ valid_loader = Dataloader(val_index,folder_name)
 filter_size=64
 
 model = Seq2Seq(int(filter_size/4), num_layer, num_layer)
+
 optimizer = tf.keras.optimizers.Adam(lr)
 
 ckpt,ckpt_manager = make_checkpoint(checkpoint_path,model,optimizer)
