@@ -41,7 +41,7 @@ def train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager,file_nam
         df.append([epoch,total_loss.numpy(),total_val_score.numpy()])
         if epoch%10==0:
             print(f"epochs : {epoch}  total_loss : {total_loss} , total_val_score : {total_val_score} time : {time.time()-tt}" )
-        if epoch%200==0:
+        if epoch%10==0:
             print(f"epochs : {epoch}  total_loss : {total_loss} , total_val_score : {total_val_score} time : {time.time()-tt}" )
             print("Save ckpt")
             ckpt_manager.save()
