@@ -27,22 +27,23 @@ def make_checkpoint(checkpoint_path,model,optimizer):
     return ckpt,ckpt_manager
 
 #(24,14,1) fix
-#(24,31,1) kang
+#(24,31,1) kang 배치 32
 # (24,30,1) olym
 
-folder_name="npz_gray_7_64_fix"
-checkpoint_path = './seq2seq/kang/'
+folder_name="npz_gray_kang"
+checkpoint_path = f'./seq2seq/{folder_name}/'
+os.makedirs(checkpoint_path,exist_ok=True)
 #npz_x의 갯수
-num=16
-batch_size=64
-img_shape=(24,14,1)
-epochs = 12000
-num_layer=3
-lr = 0.00001
+num=31
+batch_size=32
+# img_shape=(288,17,1)
+epochs = 3000
+num_layer=4
+lr = 0.00005
 loss_f="mse"
 drop=0.1
 
-val_index=[3]
+val_index=[num-1]
 train_index=[]
 for i in list(range(num)):
     if i not in val_index:
@@ -56,9 +57,12 @@ valid_loader = Dataloader(val_index,folder_name)
 filter_size=64
 
 model = Seq2Seq(int(filter_size/4), num_layer, num_layer)
+
 optimizer = tf.keras.optimizers.Adam(lr)
 
 ckpt,ckpt_manager = make_checkpoint(checkpoint_path,model,optimizer)
 
-train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager)
-model.save_weights(f'seq2seq_인코더만layernorm_inside_{filter_size}_{lr}_{loss_f}_{num_layer}_{epochs}_{drop}.h5')
+file_name=f'layernorm_{folder_name}_{filter_size}_{lr}_{loss_f}_{num_layer}_{epochs}'
+print(file_name)
+train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager,file_name)
+model.save_weights(f'{file_name}.h5')
