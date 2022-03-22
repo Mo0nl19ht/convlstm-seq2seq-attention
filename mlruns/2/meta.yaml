@@ -1,0 +1,4 @@
+artifact_location: file:///home/vislab/myw/convlstm-seq2seq-attention/mlruns/2
+experiment_id: '2'
+lifecycle_stage: active
+name: Convl_npz_gray_kang

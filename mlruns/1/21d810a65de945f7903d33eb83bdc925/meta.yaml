@@ -1,0 +1,15 @@
+artifact_uri: file:///home/vislab/myw/convlstm-seq2seq-attention/mlruns/1/21d810a65de945f7903d33eb83bdc925/artifacts
+end_time: 1647567697456
+entry_point_name: ''
+experiment_id: '1'
+lifecycle_stage: active
+name: ''
+run_id: 21d810a65de945f7903d33eb83bdc925
+run_uuid: 21d810a65de945f7903d33eb83bdc925
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1647567617895
+status: 3
+tags: []
+user_id: vislab

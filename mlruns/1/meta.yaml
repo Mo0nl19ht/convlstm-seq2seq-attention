@@ -1,0 +1,5 @@
+artifact_location: file:///home/vislab/myw/convlstm-seq2seq-attention/mlruns/1
+experiment_id: '1'
+lifecycle_stage: active
+name: temp
+tags: {}
