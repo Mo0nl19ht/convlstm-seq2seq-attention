@@ -112,4 +112,4 @@ for i in range(len(lr_li)):
         # mlflow.tensorflow.save_model(model)
         # mlflow.log_metrics(metrics)
 
-    model.save_weights(f'{file_name}.h5')
+    model.save_weights(f'result/model/{file_name}.h5')
