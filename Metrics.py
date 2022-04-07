@@ -5,8 +5,6 @@ from tensorflow import keras
 from tensorflow.keras import layers, metrics
 import io
 import imageio
-from IPython.display import Image, display
-from ipywidgets import widgets, Layout, HBox
 from PIL import Image
 from tqdm import tqdm
 import os
