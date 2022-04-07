@@ -1,5 +1,5 @@
 import numpy as np
-from Metircs import metrics_
+from Metrics import metrics_
 
 def evaluate(model,file_name):
     path=f"../{file_name}"

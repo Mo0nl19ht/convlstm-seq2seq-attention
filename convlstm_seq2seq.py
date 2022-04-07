@@ -40,7 +40,7 @@ def make_checkpoint(checkpoint_path,model,optimizer):
 params = {
     'num' : 31,
     'batch_size' : 64,
-    'epochs' : 3000,
+    'epochs' : 10,
     'num_layer': 4,
     'lr' : 0.00005,
     'loss_f' : 'mse',
@@ -82,7 +82,7 @@ if experiment == None:
 else:
     experiment_id=experiment.experiment_id
 
-lr_li=[0.0005, 0.0001,0.00001,0.00005]
+lr_li=[0.00005]
 
 for i in range(len(lr_li)):
     print(i)
@@ -97,8 +97,9 @@ for i in range(len(lr_li)):
     print(file_name)
 
     model,train_loss,val_loss=train(params['epochs'],model,optimizer,train_loader,valid_loader,ckpt_manager,file_name)
+    a=time.time()
     evaluate(model,file_name)
-
+    print(time.time()-a)
 
     with mlflow.start_run(experiment_id=experiment_id) as run:
         # mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
