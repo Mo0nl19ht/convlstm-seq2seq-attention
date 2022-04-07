@@ -5,6 +5,7 @@ import time
 from Dataloader import Dataloader
 from Seq2Seq import Seq2Seq
 from Train import train
+from Evaluate import evaluate
 import mlflow
 
 
@@ -82,6 +83,7 @@ else:
     experiment_id=experiment.experiment_id
 
 lr_li=[0.0005, 0.0001,0.00001,0.00005]
+
 for i in range(len(lr_li)):
     print(i)
     params['lr']=lr_li[i]
@@ -94,7 +96,9 @@ for i in range(len(lr_li)):
     file_name=f"layernorm_{folder_name}_{params['filter_size']}_{params['lr']}_{params['loss_f']}_{params['num_layer']}_{params['epochs']}"
     print(file_name)
 
-    train_loss,val_loss=train(params['epochs'],model,optimizer,train_loader,valid_loader,ckpt_manager,file_name)
+    model,train_loss,val_loss=train(params['epochs'],model,optimizer,train_loader,valid_loader,ckpt_manager,file_name)
+    evaluate(model,file_name)
+
 
     with mlflow.start_run(experiment_id=experiment_id) as run:
         # mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)

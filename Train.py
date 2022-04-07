@@ -74,4 +74,4 @@ def train(epochs,model,optimizer,train_loader,valid_loader,ckpt_manager,file_nam
     plt.title("train_loss")
     plt.savefig(f'log/{file_name}/{file_name}_train.png')
     plt.clf()
-    return total_loss.numpy(),total_val_score.numpy()
+    return model,total_loss.numpy(),total_val_score.numpy()
