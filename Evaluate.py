@@ -32,7 +32,7 @@ def evaluate_by_sector(path, file_name, model, batch_size):
         peak_list = []
         rest_list = []
         # for i in tqdm(list):
-        x_test = np.load(f"{path}/2020/{k}.npz")['arr_0']
+        x_test = np.load(f"{path}/test/{k}.npz")['arr_0']
 
 
 
