@@ -70,12 +70,12 @@ def compute_metrics(original,predict,start,end,is_pval=0):
     y_pred_flatten=y_pred.flatten()
 
     mape=MAPE(y_flatten,y_pred_flatten,0)
-
     rmse=np.sqrt(mean_squared_error(y_flatten,y_pred_flatten))
     mae=mean_absolute_error(y_flatten,y_pred_flatten)
-    p_val=stats.chisquare(y_flatten,y_pred_flatten)[1]
+
 
     if is_pval==1:
+        p_val = stats.chisquare(y_flatten, y_pred_flatten)[1]
         return np.array([rmse,mape,mae,p_val])
     
     return np.array([rmse,mape,mae])
