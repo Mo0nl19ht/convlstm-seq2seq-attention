@@ -6,8 +6,12 @@ import os
 def evaluate(batch_size,model,folder_name,file_name):
     path=f"../{folder_name}"
     target_list=[0,8]
+    time=time.time()
     evaluate_by_image(path,file_name,model,target_list)
+    print(f"image_time : {time.time()-time}")
+    time=time.time()
     evaluate_by_time(batch_size,path,file_name)
+    print(f"time_time : {time.time() - time}")
 
 
 def evaluate_by_time(batch_size,path,file_name):
