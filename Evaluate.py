@@ -1,5 +1,5 @@
 import numpy as np
-from Metrics import metrics_
+from Metrics import metrics_ , compute_metrics
 import matplotlib.pyplot as plt
 import time
 
