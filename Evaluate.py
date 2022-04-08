@@ -1,8 +1,8 @@
 import numpy as np
 from Metrics import metrics_
-
-def evaluate(model,file_name):
-    path=f"../{file_name}"
+import matplotlib.pyplot as plt
+def evaluate(model,folder_name,file_name):
+    path=f"../{folder_name}"
     x_test=np.load(f"{path}/test/0.npz")['arr_0']
     target_list=[0,8]
     evaluate_by_image(file_name,model,x_test,target_list)
@@ -19,15 +19,18 @@ def evaluate_by_image(file_name,model,x_test,target_list):
 
         plt.clf()
         fig, axes = plt.subplots(2, 7, figsize=(20, 10))
-        plt.title(f"rmse : {rmse}, mape : {mape}, mae : {mae}")
+        
         for idx, ax in enumerate(axes[0]):
             ax.imshow(original[idx])
             ax.set_title(f"Original Frame {idx}")
             ax.axis("off")
         for idx, ax in enumerate(axes[1]):
             ax.imshow(predict[idx])
-            ax.set_title(f"Predicted Frame {idx}")
             ax.axis("off")
+        axes[1][0].set_title(f"rmse : {rmse}")
+        axes[1][1].set_title(f"mape : {mape}")
+        axes[1][2].set_title(f"mae : {mae}")
+        plt.title(f"rmse : {rmse}, mape : {mape}, mae : {mae}")
         plt.savefig(f'log/{file_name}/{file_name}_eval_image_target_{target}.png')
         plt.clf()
         

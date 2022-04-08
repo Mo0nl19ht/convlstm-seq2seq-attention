@@ -98,7 +98,7 @@ for i in range(len(lr_li)):
 
     model,train_loss,val_loss=train(params['epochs'],model,optimizer,train_loader,valid_loader,ckpt_manager,file_name)
     a=time.time()
-    evaluate(model,file_name)
+    evaluate(model,folder_name,file_name)
     print(time.time()-a)
 
     with mlflow.start_run(experiment_id=experiment_id) as run:
