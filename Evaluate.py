@@ -135,7 +135,7 @@ def evaluate_all_test(path, file_name, model, batch_size):
     x_test_len = len(os.listdir(f"{path}/test"))
     for k in range(x_test_len):
         times = []
-        x_test = np.load(f"{path}/2020/{k}.npz")['arr_0']
+        x_test = np.load(f"{path}/test/{k}.npz")['arr_0']
 
         for target in range(0, batch_size - win, win):
             predict = _predict(model, x_test, target)
@@ -180,13 +180,13 @@ def evaluate_all_test(path, file_name, model, batch_size):
         # mae
         mae_std.append(np.std(total_7[:, time, 2], axis=0))
 
-    make_artifact(rmse_list)
-    make_artifact(mape_list)
-    make_artifact(mae_list)
-    make_artifact(pval_list)
-    make_artifact(rmse_std)
-    make_artifact(mape_std)
-    make_artifact(mae_std)
+    make_artifact(file_name,rmse_list,"rmse")
+    make_artifact(file_name,mape_list,"mape")
+    make_artifact(file_name,mae_list,"mae")
+    make_artifact(file_name,pval_list,"p_val")
+    make_artifact(file_name,rmse_std,"rmse_std")
+    make_artifact(file_name,mape_std,"mape_std")
+    make_artifact(file_name,mae_std,"mae_std")
 
     return np.mean(rmse_list),np.mean(mape_list),np.mean(mae_list)
 
