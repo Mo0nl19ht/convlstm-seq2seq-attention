@@ -144,7 +144,7 @@ def evaluate_all_test(path, file_name, model, batch_size):
             original = np.array(all)[:, :, :, :, 0]
             time = []
             for i in range(1, 25):
-                time.append(compute_metrics(original, predict, i, i + 1, is_pval=1))
+                time.append(compute_metrics(original, predict, i, i + 1, is_pval=0))
 
             # 전체 저장
             times.append(np.array(time))
@@ -156,7 +156,7 @@ def evaluate_all_test(path, file_name, model, batch_size):
     rmse_list = []
     mape_list = []
     mae_list = []
-    pval_list = []
+    # pval_list = []
 
     for time in range(24):
         # rmse
@@ -166,7 +166,7 @@ def evaluate_all_test(path, file_name, model, batch_size):
         # mae
         mae_list.append(np.mean(total_7[:,time,2]))
         # p_value
-        pval_list.append(np.mean(total_7[:, time, 3]))
+        # pval_list.append(np.mean(total_7[:, time, 3]))
 
     rmse_std = []
     mape_std = []
@@ -183,7 +183,7 @@ def evaluate_all_test(path, file_name, model, batch_size):
     make_artifact(file_name,rmse_list,"rmse")
     make_artifact(file_name,mape_list,"mape")
     make_artifact(file_name,mae_list,"mae")
-    make_artifact(file_name,pval_list,"p_val")
+    # make_artifact(file_name,pval_list,"p_val")
     make_artifact(file_name,rmse_std,"rmse_std")
     make_artifact(file_name,mape_std,"mape_std")
     make_artifact(file_name,mae_std,"mae_std")
