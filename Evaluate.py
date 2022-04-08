@@ -1,6 +1,8 @@
 import numpy as np
 from Metrics import metrics_
 import matplotlib.pyplot as plt
+import time
+
 import os
 
 def evaluate(batch_size,model,folder_name,file_name):
@@ -9,12 +11,15 @@ def evaluate(batch_size,model,folder_name,file_name):
     i_time=time.time()
     evaluate_by_image(path,file_name,model,target_list)
     print(f"image_time : {time.time()-i_time}")
+    s_time=time.time()
+    evaluate_by_sector(path, file_name, model, batch_size)
+    print(f"sector_time : {time.time() - s_time}")
     t_time=time.time()
-    evaluate_by_time(batch_size,path,file_name)
+    rmse,mape,mae=evaluate_all_test(path, file_name, model, batch_size)
     print(f"time_time : {time.time() - t_time}")
+    return rmse,mape,mae
 
-
-def evaluate_by_time(batch_size,path,file_name):
+def evaluate_by_sector(path, file_name, model, batch_size):
     # 2020년 (훈련안시킨거) 모든거 예측하고 매트릭 확인
     win = 7
     total_all = []
@@ -72,7 +77,7 @@ def evaluate_by_time(batch_size,path,file_name):
         total_all.append(
             np.array((np.array(before_list), np.array(peak_list), np.array(after_list), np.array(rest_list))))
     total_all = np.array(total_all)
-    f = open(f"log/{file_name}/{file_name}_eval_by_time.txt", 'w')
+    f = open(f"log/{file_name}/{file_name}_eval_by_sector.txt", 'w')
     f.write("rmse mape mae")
     f.write("평균")
     f.write("before")
@@ -124,7 +129,83 @@ def evaluate_by_image(path,file_name,model,target_list):
         plt.savefig(f'log/{file_name}/{file_name}_eval_image_target_{target}.png')
         plt.clf()
         
+def evaluate_all_test(path, file_name, model, batch_size):
+    win=7
+    total_7 = []
+    x_test_len = len(os.listdir(f"{path}/test"))
+    for k in range(x_test_len):
+        times = []
+        x_test = np.load(f"{path}/2020/{k}.npz")['arr_0']
 
+        for target in range(0, batch_size - win, win):
+            predict = _predict(model, x_test, target)
+            original = x_test[target + 7]
+            all = _make_serial(original)
+            original = np.array(all)[:, :, :, :, 0]
+            time = []
+            for i in range(1, 25):
+                time.append(compute_metrics(original, predict, i, i + 1, is_pval=1))
+
+            # 전체 저장
+            times.append(np.array(time))
+
+        total_7.append(np.array(times))
+    total_7 = np.array(total_7)
+    total_7 = total_7.reshape(-1, 24, 4)
+
+    rmse_list = []
+    mape_list = []
+    mae_list = []
+    pval_list = []
+
+    for time in range(24):
+        # rmse
+        rmse_list.append(np.mean(np.sqrt(total_7[:, time, 0].astype(float))))
+        # mape
+        mape_list.append(np.mean(total_7[:, time, 1]))
+        # mae
+        mae_list.append(np.mean(total_7[:,time,2]))
+        # p_value
+        pval_list.append(np.mean(total_7[:, time, 3]))
+
+    rmse_std = []
+    mape_std = []
+    mae_std = []
+
+    for time in range(24):
+        # rmse
+        rmse_std.append(np.std(np.sqrt(total_7[:, time, 0].astype(float)), axis=0))
+        # mape
+        mape_std.append(np.std(total_7[:, time, 1], axis=0))
+        # mae
+        mae_std.append(np.std(total_7[:, time, 2], axis=0))
+
+    make_artifact(rmse_list)
+    make_artifact(mape_list)
+    make_artifact(mae_list)
+    make_artifact(pval_list)
+    make_artifact(rmse_std)
+    make_artifact(mape_std)
+    make_artifact(mae_std)
+
+    return np.mean(rmse_list),np.mean(mape_list),np.mean(mae_list)
+
+
+
+
+
+def make_artifact(file_name,metric_list,metric):
+    plt.clf()
+    plt.title(f"{metric}")
+    plt.plot(range(24), metric_list)
+    plt.savefig(f'log/{file_name}/{file_name}_eval_time_{metric}.png')
+    plt.clf()
+
+    f = open(f"log/{file_name}/{file_name}_eval_time_{metric}.txt", 'w')
+    f.write(f"time,{metric}")
+    for i,data in enumerate(metric_list):
+        f.write(f"{i},{data}")
+    f.close()
 
 def _predict(model, x_test ,target):
     for idx in range(7):
@@ -146,6 +227,7 @@ def _predict(model, x_test ,target):
             predict=np.expand_dims(all,axis=0)
         else:
             predict = np.concatenate((predict, np.expand_dims(all,axis=0)), axis=0)
+
     return predict
 
 

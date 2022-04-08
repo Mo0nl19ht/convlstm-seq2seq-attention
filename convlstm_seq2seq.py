@@ -98,8 +98,8 @@ for i in range(len(lr_li)):
 
     model,train_loss,val_loss=train(params['epochs'],model,optimizer,train_loader,valid_loader,ckpt_manager,file_name)
     a=time.time()
-    evaluate(params['batch_size'],model,folder_name,file_name)
-    print(time.time()-a)
+    rmse, mape, mae = evaluate(params['batch_size'],model,folder_name,file_name)
+    print(f"all time : {time.time() - a}")
 
     with mlflow.start_run(experiment_id=experiment_id) as run:
         # mlflow.set_tracking_uri(MLFLOW_TRACKING_URI)
@@ -109,7 +109,13 @@ for i in range(len(lr_li)):
         mlflow.log_artifacts(f'log/{file_name}')
         # mlflow.set_tag("release.version", "2.2.0")
         
-        mlflow.log_metrics({"train_loss": train_loss,"val_loss":val_loss})
+        mlflow.log_metrics({
+            "train_loss": train_loss,
+            "val_loss":val_loss,
+            "rmse" : rmse,
+            "mape" : mape,
+            "mae" : mae
+        })
 
         # tf.saved_model.save(model, "./models")
 
