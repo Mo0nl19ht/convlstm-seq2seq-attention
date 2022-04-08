@@ -39,7 +39,7 @@ def make_checkpoint(checkpoint_path,model,optimizer):
 
 params = {
     'num' : 31,
-    'batch_size' : 64,
+    'batch_size' : 32,
     'epochs' : 10,
     'num_layer': 4,
     'lr' : 0.00005,
@@ -47,7 +47,7 @@ params = {
     'filter_size' : 64
 }
 
-folder_name="npz_gray_kang"
+folder_name="npz_gray_kang" #32
 checkpoint_path = f'./seq2seq/{folder_name}/'
 os.makedirs(checkpoint_path,exist_ok=True)
 #npz_x의 갯수
@@ -98,7 +98,7 @@ for i in range(len(lr_li)):
 
     model,train_loss,val_loss=train(params['epochs'],model,optimizer,train_loader,valid_loader,ckpt_manager,file_name)
     a=time.time()
-    evaluate(model,folder_name,file_name)
+    evaluate(params['batch_size'],model,folder_name,file_name)
     print(time.time()-a)
 
     with mlflow.start_run(experiment_id=experiment_id) as run:
