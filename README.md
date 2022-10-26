@@ -6,6 +6,8 @@ ConvLSTM의 성능을 높히기 위해 Encoder-Decoder구조와 Attention을 도
 
 미래의 교통파의 변화를 예측하기 위해 하루동안의 내부순환로 속도를 각각 Heatmap화 시켰습니다.
 Heatmap에서 교통 혼잡이 있는 부분은 검은색으로 짙게 칠해져서 그 교통 혼잡이 전파되는 양상을 파악할 수 있습니다. 그리고 이미지를 예측하는데 좋은 CNN과 시계열 예측에 좋은 RNN을 합친 ConvLSTM모델을 구축하여 3년간의 내부순환로 Heatmap을 데이터로 넣고 교통 혼잡 예측 모델을 만들어 예측을 하였습니다.
+
+
 ![image](https://user-images.githubusercontent.com/81469045/196760557-d8922f96-e120-4eed-b46f-51dabfc76f51.png)
 
 
