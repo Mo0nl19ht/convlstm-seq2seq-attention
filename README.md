@@ -1,62 +1,89 @@
-# convlstm-seq2seq-attention
+교통 혼잡 전파를 분석하기 위해 시공간 교통 네트워크에서 교통파 탐지 및 혼잡 분석을 할 수 있는 알고리즘을 개발 및 연구 하는 프로젝트입니다. 
+
+- 속도 및 위치 데이터 정제 및 융합하여 Graph 구축
+- Traffic 논문 리서치
+- 관측되지 않은 속도 데이터를 가상네트워크 개념을 도입하고 DCRNN을 이용하여 예측
+- ConvLSTM을 이용한 도시 고속도로의 교통 상황 예측
+
+AI에서 가장 중요한 것은 데이터임을 알게되었습니다.
+
+## 프로젝트 내용
+
+교통네트워크의 흐름을 예측하기 위해서 DCRNN([Diffusion Convolutional Recurrent Neural Network](https://arxiv.org/abs/1707.01926)) 논문을 읽고, 그 논문을 구현한 오픈소스를 찾아 제가 구축한 서울시 교통 네트워크를 넣고 예측을 진행해보았고 성능 또한 잘 나왔습니다.
+
+하지만 이 DCRNN은 RNN을 사용해서 장기간 기억력이 부족했습니다. 그래서 Attention을 추가해 주었고 장기간 기억력을 향상시켰습니다. 또 데이터가 없는 곳의 흐름을 예측하기 위해서 가상 네트워크라는 개념을 도입해서 예측을 진행했고 이 과정을 논문으로 남겼습니다(https://www.dbpia.co.kr/journal/articleDetail?nodeId=NODE10583410)
+
 미래의 교통상황을 빠르게 예측하기 위해교통 네트워크와 속도를 Heatmap화 시키고 이를 ConvLSTM으로 예측하였습니다.
 ConvLSTM의 성능을 높히기 위해 Encoder-Decoder구조와 Attention을 도입하였습니다
 
-### 원본 데이터
+---
+
+## 서울시 교통 네트워크 구축
+
+### 원천 데이터 엔지니어링
+
+**TOPIS 교통 데이터 2019~2022 → 교통 네트워크 그래프 구축 → Data Pruning**
+
+서울시 교통정보 시스템 TOPIS에서 아래와 같은 원본데이터를 모두 가져왔습니다
+
+![image.png](https://github.com/user-attachments/assets/961d4061-2259-4257-832e-7980d88e2481)
+
+모든 일자의 데이터를 Pandas를 이용해서 정제 및 융합하였습니다
+
+각 시점 및 종점을 Node라고 생각하고 Graph를 구축하였습니다
+
+노드 사이의 거리는 Edge로 속도는 가중치로 표현하였습니다
+
+TOPIS에서 위 노드들의 위치정보를 가져와서 오픈소스 맵을 활용해 지도에 찍어보니 중복되거나 위치가 맞지 않는 노드들이 있어 이를 Pruning 해주었습니다
+
+### 연구에 필요한 데이터 엔지니어링
+
+**원천 데이터 → 날짜 및 지역별 데이터 추출 → 원하는 형태로 변형 → Data Interpolation**
+
+![image.png](https://github.com/user-attachments/assets/1a5b2687-1ed8-47fa-886a-f17e56a45b40)
+
+2차원 데이터를 날짜별로 만들어주고 이를 모아서 3차원 데이터(링크 X 속도 X 날짜)를 만들어주었습니다
+
+(링크는 위 데이터에 보이는 것 처럼 시점, 종점, 거리를 가지는 벡터입니다)
+
+![Untitled](https://github.com/user-attachments/assets/64d7a392-980d-4e43-b40a-7d7ae2a791eb)
+
+값이 빈 Data는 근처 값을 활용하여 보간해주었습니다
+
+---
+
+## 데이터를 Heatmap으로 변환
 
 미래의 교통파의 변화를 예측하기 위해 하루동안의 내부순환로 속도를 각각 Heatmap화 시켰습니다.
 Heatmap에서 교통 혼잡이 있는 부분은 검은색으로 짙게 칠해져서 그 교통 혼잡이 전파되는 양상을 파악할 수 있습니다. 그리고 이미지를 예측하는데 좋은 CNN과 시계열 예측에 좋은 RNN을 합친 ConvLSTM모델을 구축하여 3년간의 내부순환로 Heatmap을 데이터로 넣고 교통 혼잡 예측 모델을 만들어 예측을 하였습니다.
 
-
-![image](https://user-images.githubusercontent.com/81469045/196760557-d8922f96-e120-4eed-b46f-51dabfc76f51.png)
-
-
-## 데이터를 Heatmap으로 변환
-
-![image](https://user-images.githubusercontent.com/81469045/196760579-1175f04f-b0fb-4df8-bb0c-cb430742d9a4.png)
-
-
-## 예측 결과
-![image](https://user-images.githubusercontent.com/81469045/196760647-532cf0ac-624a-4d3a-a999-490be7d4fb94.png)
-
-1번 열 : 기존 Heat map
-
-2~4열 : 여러가지 모델이 예측한 결과
-
-3번위 예측이 가장 정확하였다
-
-### 배운 것
-
-- AI에서 가장 중요한 것은 데이터이다
-- AI 논문 리서치 능력
-- 필요한 데이터를 수집하는 능력
-- 필요한 모델을 구현하는 능력
-- 데이터를 내가 원하는 형태로 전처리하고 보간하는 능력
-- MLflow를 이용한 모델 및 실험관리
-- 내가 모르는 것을 잘 질문하는 법
+![Untitled](https://github.com/user-attachments/assets/9ea717be-5d24-4254-be2e-42150311a83a)
 
 ### 역할
 
+- 연구에 활용할 데이터 수집 및 전처리 및 보간
 - AI 논문 리서치
-- AI 모델 구현
-- 데이터 수집 및 전처리
+- AI 논문 모델 구현
+- MLflow를 이용한 모델 및 실험관리
 - 논문 작성
 
 ## 발생문제 및 해결방법
 
+---
+
 - 처음에는 컬러 heatmap으로 만들고 이를 훈련 및 예측에 사용함 →
-**성능이 그다지 좋지 않았음** → 스스로 디버깅하고 데이터를 살펴보면서 교수님과 토론함
-→ 굳이 컬러 heatmap으로 만들 필요가 없음을 발견함 → 흑백 heatmap으로 예측을 하니 RMSE성능이 5 오름 (15→10)
+**성능이 좋지 않았음** → 데이터 자체를 분석하여 문제점을 파악함
+→ 컬러 heatmap으로 만들 필요가 없음을 발견함 → 흑백 heatmap으로 예측을 하니 RMSE성능이 5 오름 (15→10)
     - 이유 : 원본데이터는 x축은 장소 y축은 시간으로 이루어진 속도데이터임 → 이를 heatmap화 시킬 때  아래의 컬러 range사용(잘 보이기 위해서)
         
-        ![image](https://user-images.githubusercontent.com/81469045/196760679-43cdd7fe-85d0-49ec-b739-e7d12df4efba.png)
-        하지만 색상이 들어간 heatmap은 (r,g,b)의 벡터로 이루어짐 → 즉 1차원의 데이터(속력) 가 3차원의 데이터(r,g,b)로 확장되었기 떄문에 데이터가 더 복잡해져서 예측을 잘 할수 없었던것
+        ![Untitled](https://github.com/user-attachments/assets/3c0adec1-56bc-40ca-ad5c-2d1494b90d51)
+        
+        하지만 색상이 들어간 heatmap은 (r,g,b)의 벡터로 이루어짐
+        
+        → 즉 1차원의 데이터(속력) 가 **3차원의 데이터(r,g,b)로 확장되었기 때문에 데이터가 더 복잡해져서** 예측을 잘 할수 없었던것
         
 - **위의 모델을 여러 방면으로 튜닝해도 성능이 10 이하로 떨어지지 않음**
-    - 관련 최신논문을 리서치함 → Encoder - Decode구조를 도입함 → 성능 향상 RMSE(10→7)
-    → 여기에 attnetion을 도입함 → 성능 향상 RMSE(7~3)
-    
+    - 관련 최신논문을 리서치함 → Encoder - Decode구조를 도입함 → **성능 향상 RMSE(10→7)**
+    → 여기에 attnetion을 도입함 → **성능 향상 RMSE(7~3)**
 - 위의 모델을 튜닝하고 여러가지 데이터로 실험해야하는데 **실험 및 모델관리가 매우 힘듬**
-    - Mlops를 공부하여 모델 및 실험 관리 라이브러리 MLflow를 도입 → 실험을 자동화 시키고 evaluate까지 저장하도록함
-![image](https://user-images.githubusercontent.com/81469045/196760725-ac72e3ce-b639-495f-a784-26cbf5628de8.png)
-![image](https://user-images.githubusercontent.com/81469045/196760764-e758bfd7-859d-4eb2-a779-841fb9ecda7c.png)
+    - Mlops를 공부하여 모델 및 실험 관리 라이브러리 **MLflow를 도입** → **실험 및 평가를 자동화**
